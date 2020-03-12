@@ -16,7 +16,7 @@ hook-apt-pre-build-buildpack() {
     pushd "$SOURCECODE_WORK_DIR" >/dev/null
   fi
 
-  if [[ ! -d "dpkg-packages" ]]; then
+  if [[ ! -d "dpkg-packages" && "$PLOTLY_DASH_INDIRECT_CERT_MAP" != "1" ]]; then
     return
   fi
 
@@ -27,9 +27,16 @@ hook-apt-pre-build-buildpack() {
   local DOCKER_ARGS=$(: | plugn trigger docker-args-build "$APP" "$BUILDER_TYPE")
   declare -a ARG_ARRAY
   eval "ARG_ARRAY=($DOCKER_ARGS)"
+  
+  if [[ -d "dpkg-packages" ]]; then
+    dokku_log_info1 "Creating extended app image with custom system packages"
+    COMMAND="$(fn-apt-command "$APP" "$IMAGE" "$DIR")"
+  fi
 
-  dokku_log_info1 "Creating extended app image with custom system packages"
-  COMMAND="$(fn-apt-command "$APP" "$IMAGE" "$DIR")"
+  if [[ "$PLOTLY_DASH_INDIRECT_CERT_MAP" == "1" ]]; then
+    COMMAND="update-ca-certificates${COMMAND:+ && $COMMAND}"
+  fi
+
   CID=$(docker run -d "${ARG_ARRAY[@]}" "$IMAGE" /bin/bash -e -c "$COMMAND")
 
   "$DOCKER_BIN" attach "$CID"

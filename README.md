@@ -6,6 +6,13 @@ Inject deb packages into dokku based on files in project.
 dokku-apt is a plugin for [dokku](https://github.com/dokku/dokku) that installs apt packages in your dokku environment.
 This is mostly useful for instances where you have an app that depends on packages being here.
 
+<div align="center">
+  <a href="https://dash.plotly.com/project-maintenance">
+    <img src="https://dash.plotly.com/assets/images/maintained-by-plotly.png" width="400px" alt="Maintained by Plotly">
+  </a>
+</div>
+
+
 ## requirements
 
 dokku 0.18.x+
